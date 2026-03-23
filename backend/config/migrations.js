@@ -99,6 +99,58 @@ const migrations = [
     }
   },
   {
+    id: 'create_votes',
+    up: (db) => {
+      db.run(`CREATE TABLE IF NOT EXISTS votes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id TEXT NOT NULL,
+        report_id TEXT NOT NULL,
+        vote_type INTEGER NOT NULL CHECK (vote_type IN (1, -1)),
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id),
+        FOREIGN KEY (report_id) REFERENCES benchmarks(id)
+      )`);
+
+      // Backfill legacy string vote values from older schema versions.
+      try {
+        db.run(`UPDATE votes
+                SET vote_type = CASE
+                  WHEN vote_type = 'up' THEN 1
+                  WHEN vote_type = 'down' THEN -1
+                  ELSE vote_type
+                END`);
+      } catch (e) { /* ignore legacy mismatch */ }
+
+      // Clamp all vote values to the canonical set (-1, 1).
+      try {
+        db.run(`UPDATE votes
+                SET vote_type = CASE
+                  WHEN CAST(vote_type AS INTEGER) >= 1 THEN 1
+                  ELSE -1
+                END`);
+      } catch (e) { /* ignore legacy mismatch */ }
+
+      // Ensure timestamp columns exist in DBs created before this migration.
+      try { db.run('ALTER TABLE votes ADD COLUMN created_at DATETIME DEFAULT CURRENT_TIMESTAMP'); } catch (e) { /* already exists */ }
+      try { db.run('ALTER TABLE votes ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP'); } catch (e) { /* already exists */ }
+
+      // De-duplicate rows so unique user/report index can be created safely.
+      try {
+        db.run(`DELETE FROM votes
+                WHERE rowid NOT IN (
+                  SELECT MIN(rowid)
+                  FROM votes
+                  GROUP BY user_id, report_id
+                )`);
+      } catch (e) { /* table may be empty */ }
+
+      db.run(`CREATE INDEX IF NOT EXISTS idx_votes_report ON votes(report_id)`);
+      db.run(`CREATE INDEX IF NOT EXISTS idx_votes_user ON votes(user_id)`);
+      db.run(`CREATE UNIQUE INDEX IF NOT EXISTS idx_votes_user_report ON votes(user_id, report_id)`);
+    }
+  },
+  {
     id: 'add_user_community_columns',
     up: (db) => {
       const columns = [

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../services/api';
+import { feed } from '../services/api';
 import FeedItem from '../components/community/FeedItem';
 import MilestoneCard from '../components/community/MilestoneCard';
 import TrendingHardware from '../components/community/TrendingHardware';
@@ -22,7 +22,7 @@ export default function CommunityFeed() {
 
   // Fetch milestones once
   useEffect(() => {
-    api.get('/feed/milestones')
+    feed.getMilestones()
       .then((res) => setMilestones(res.data.milestones || []))
       .catch(() => setMilestones([]));
   }, []);
@@ -35,7 +35,7 @@ export default function CommunityFeed() {
     setOffset(0);
     setHasMore(true);
 
-    api.get('/feed', { params: { type: feedType, limit: FEED_LIMIT, offset: 0 } })
+    feed.getAll({ type: feedType, limit: FEED_LIMIT, offset: 0 })
       .then((res) => {
         if (cancelled) return;
         const newItems = res.data.items || [];
@@ -57,7 +57,7 @@ export default function CommunityFeed() {
     if (loadingMore || !hasMore) return;
     setLoadingMore(true);
 
-    api.get('/feed', { params: { type: feedType, limit: FEED_LIMIT, offset } })
+    feed.getAll({ type: feedType, limit: FEED_LIMIT, offset })
       .then((res) => {
         const newItems = res.data.items || [];
         setItems((prev) => [...prev, ...newItems]);

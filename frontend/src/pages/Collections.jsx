@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../services/api';
+import { collections as collectionsApi } from '../services/api';
 import SectionHeader from '../components/ui/SectionHeader';
 import Skeleton from '../components/ui/Skeleton';
 import EmptyState from '../components/ui/EmptyState';
@@ -51,7 +51,7 @@ export default function Collections() {
 
   useEffect(() => {
     let cancelled = false;
-    api.get('/collections')
+    collectionsApi.getAll()
       .then((res) => {
         if (!cancelled) setCollections(res.data.collections || []);
       })

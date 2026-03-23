@@ -10,6 +10,9 @@
   "nav": {
     "home": "Inicio",
     "dashboard": "Painel",
+    "hardware": "Hardware",
+    "community": "Comunidade",
+    "collections": "Colecoes",
     "leaderboard": "Ranking",
     "submit": "Enviar benchmark",
     "compare": "Comparar",
@@ -27,7 +30,7 @@
   },
   "home": {
     "insightBadge": "Inteligencia Hybrid Tech",
-    "viewAll": "Ver painel completo",
+    "viewAll": "Ver toda atividade",
     "emptyRecent": "Ainda nao ha benchmarks publicados.",
     "emptyRankingTitle": "O ranking ainda nao tem dados",
     "emptyRankingDesc": "Assim que novos resultados forem enviados, os melhores sistemas aparecerao aqui.",
@@ -287,6 +290,9 @@
     "loading": "Carregando...",
     "error": "Ocorreu um erro",
     "success": "Sucesso",
+    "add": "Adicionar",
+    "enabled": "Ativado",
+    "disabled": "Desativado",
     "cancel": "Cancelar",
     "save": "Salvar",
     "delete": "Excluir",
@@ -303,6 +309,54 @@
     "notFound": "Nao encontrado",
     "unauthorized": "Nao autorizado",
     "serverError": "Erro do servidor. Tente novamente mais tarde."
+  },
+  "community": {
+    "hardware": {
+      "resolveError": "Nao foi possivel resolver este hardware. Tente um modelo mais especifico."
+    }
+  },
+  "collections": {
+    "eyebrow": "Colecoes da Comunidade",
+    "backToList": "Voltar para Colecoes",
+    "by": "Por",
+    "items": "itens",
+    "editorSubtitle": "Monte uma colecao de hardware e reports para a comunidade.",
+    "notesLabel": "Nota do item (opcional)",
+    "addHardwareLabel": "Adicionar hardware por nome",
+    "addHardwarePlaceholder": "Exemplo: RTX 4080 Super",
+    "addReportLabel": "Adicionar report por ID",
+    "addReportPlaceholder": "UUID do benchmark",
+    "fields": {
+      "title": "Titulo",
+      "description": "Descricao",
+      "public": "Colecao publica"
+    },
+    "actions": {
+      "edit": "Editar",
+      "vote": "Votar",
+      "unvote": "Remover voto",
+      "addItem": "Adicionar itens nesta colecao",
+      "resolve": "Resolver",
+      "addReport": "Adicionar",
+      "addResolved": "Adicionar hardware resolvido",
+      "newCollection": "Criar colecao",
+      "editCollection": "Editar colecao",
+      "delete": "Excluir"
+    },
+    "messages": {
+      "loadError": "Falha ao carregar a colecao.",
+      "voteError": "Falha ao atualizar o voto.",
+      "addItemError": "Falha ao adicionar item.",
+      "removeItemError": "Falha ao remover item.",
+      "notFoundTitle": "Colecao nao encontrada",
+      "notFoundDescription": "Esta colecao nao existe ou nao esta disponivel.",
+      "noDescription": "Sem descricao.",
+      "editForbidden": "Voce so pode editar suas proprias colecoes.",
+      "titleRequired": "Titulo obrigatorio.",
+      "saveError": "Falha ao salvar colecao.",
+      "deleteConfirm": "Excluir esta colecao permanentemente?",
+      "deleteError": "Falha ao excluir colecao."
+    }
   },
   "experience": {
     "beginnerDesc": "Novo em montagem e benchmark de PC.",

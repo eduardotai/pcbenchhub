@@ -11,7 +11,7 @@
  */
 import { useEffect, useState, useCallback } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import api from '../services/api';
+import { hardware } from '../services/api';
 import HardwareCard from '../components/hardware/HardwareCard';
 import FilterChip from '../components/ui/FilterChip';
 import SectionHeader from '../components/ui/SectionHeader';
@@ -73,7 +73,7 @@ export default function HardwareBrowse() {
     if (categoryParam && categoryParam !== 'All') params.category = categoryParam;
     if (searchParam) params.search = searchParam;
 
-    api.get('/hardware', { params })
+    hardware.getAll(params)
       .then((res) => {
         if (cancelled) return;
         setComponents(res.data.components || res.data.hardware || []);

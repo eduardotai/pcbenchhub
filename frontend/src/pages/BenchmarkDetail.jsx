@@ -66,7 +66,7 @@ export default function BenchmarkDetail() {
         }
       } catch (error) {
         console.error('Failed to load benchmark detail:', error);
-        navigate('/dashboard');
+        navigate('/community');
       } finally {
         if (!cancelled) {
           setLoading(false);
@@ -204,9 +204,9 @@ export default function BenchmarkDetail() {
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between gap-2">
-        <Link to="/dashboard" className="btn btn-ghost">{t('common.back')}</Link>
+        <Link to="/community" className="btn btn-ghost">{t('common.back')}</Link>
         <div className="flex items-center gap-2">
-          <Link to={`/compare?ids=${benchmark.id}`} className="btn btn-secondary">{t('benchmark.compare')}</Link>
+          <Link to="/hardware" className="btn btn-secondary">{t('benchmark.compare')}</Link>
           {user && user.id !== benchmark.user_id ? (
             <button type="button" onClick={handleFlag} className="btn btn-danger">
               {t('benchmark.flag')}

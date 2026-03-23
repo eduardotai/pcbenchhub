@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Collection = require('../models/Collection');
 const { auth, optionalAuth } = require('../middleware/auth');
+const activityTracker = require('../utils/activityTracker');
 
 // GET /api/collections — lista pública, ordenada por upvotes
 router.get('/', optionalAuth, (req, res) => {
@@ -69,6 +70,8 @@ router.post('/', auth, (req, res) => {
       description: description || null,
       isPublic: isPublic !== false && isPublic !== 0 ? 1 : 0,
     });
+
+    activityTracker.collectionCreated(req.user.id, coll.id, coll.title);
 
     res.status(201).json({ collection: coll });
   } catch (error) {

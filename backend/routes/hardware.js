@@ -10,11 +10,24 @@ const HardwareComponent = require('../models/HardwareComponent');
 router.get('/', (req, res) => {
   try {
     const { category, search } = req.query;
-    const limit = Math.min(parseInt(req.query.limit) || 20, 100);
-    const offset = parseInt(req.query.offset) || 0;
+    const sort = req.query.sort || 'rating';
+    const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 20, 1), 100);
+    const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+    const offset = parseInt(req.query.offset, 10) || (page - 1) * limit;
 
-    const components = HardwareComponent.getAll({ category, search, limit, offset });
-    res.json({ components, limit, offset });
+    const components = HardwareComponent.getAll({ category, search, sort, limit, offset });
+    const total = HardwareComponent.count({ category, search });
+
+    res.json({
+      components,
+      pagination: {
+        page,
+        limit,
+        offset,
+        total,
+        pages: Math.max(1, Math.ceil(total / limit)),
+      },
+    });
   } catch (err) {
     console.error('[hardware] GET / error:', err.message);
     res.status(500).json({ error: 'Failed to retrieve hardware components' });

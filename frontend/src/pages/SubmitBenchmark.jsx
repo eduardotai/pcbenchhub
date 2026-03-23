@@ -8,8 +8,7 @@ import ScorePill from '../components/ui/ScorePill';
 import SectionHeader from '../components/ui/SectionHeader';
 import GamingContextForm from '../components/community/GamingContextForm';
 import TagSelector from '../components/community/TagSelector';
-import { benchmarks } from '../services/api';
-import api from '../services/api';
+import { benchmarks, hardware } from '../services/api';
 import {
   buildTrustMeta,
   formatMetricLabel,
@@ -118,17 +117,15 @@ export default function SubmitBenchmark() {
     if (!query) return;
     setComponentSearchLoading(true);
     try {
-      const res = await api.get('/hardware/resolve', { params: { q: query } });
-      const component = res.data?.hardware || res.data;
+      const res = await hardware.resolve(query);
+      const component = res.data?.component;
       if (component && component.id) {
         if (!linkedComponents.find((c) => c.id === component.id)) {
           setLinkedComponents((prev) => [...prev, component]);
         }
       }
     } catch {
-      // If resolve fails, add as a plain entry with the query as name
-      const fallback = { id: `custom-${Date.now()}`, name: query };
-      setLinkedComponents((prev) => [...prev, fallback]);
+      setError(t('community.hardware.resolveError', 'Failed to resolve this hardware name. Try a more specific model.'));
     } finally {
       setComponentSearchLoading(false);
       setComponentSearch('');
@@ -178,7 +175,7 @@ export default function SubmitBenchmark() {
     try {
       const payload = buildPayload();
       await benchmarks.submit(payload);
-      navigate('/dashboard');
+      navigate('/community');
     } catch (submitError) {
       setError(submitError.response?.data?.error || t('benchmark.submitError'));
     } finally {
@@ -588,4 +585,3 @@ export default function SubmitBenchmark() {
     </div>
   );
 }
-

@@ -4,6 +4,7 @@ const User = require('../models/User');
 const Badge = require('../models/Badge');
 const UserHardware = require('../models/UserHardware');
 const ActivityLog = require('../models/ActivityLog');
+const activityTracker = require('../utils/activityTracker');
 const { auth } = require('../middleware/auth');
 const { getDb } = require('../config/db');
 
@@ -34,7 +35,7 @@ function getUserStats(userId) {
     `SELECT COUNT(*) as cnt
      FROM votes v
      JOIN benchmarks b ON b.id = v.report_id
-     WHERE b.user_id = ? AND v.vote_type = 'up'`
+     WHERE b.user_id = ? AND CAST(v.vote_type AS INTEGER) = 1`
   );
   voteStmt.bind([userId]);
   voteStmt.step();
@@ -193,6 +194,10 @@ router.post('/:username/hardware', auth, (req, res) => {
       notes: notes || null,
       isPrimary: isPrimary ? 1 : 0,
     });
+
+    if (entry) {
+      activityTracker.hardwareAdded(user.id, entry.component_id, entry.component_name);
+    }
 
     res.status(201).json({ hardware: entry });
   } catch (err) {

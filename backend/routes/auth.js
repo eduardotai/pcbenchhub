@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require('../models/User');
 const { auth, generateToken } = require('../middleware/auth');
 const { validateRegister, validateProfile } = require('../middleware/validate');
+const activityTracker = require('../utils/activityTracker');
 
 router.post('/register', validateRegister, async (req, res) => {
   try {
@@ -19,6 +20,7 @@ router.post('/register', validateRegister, async (req, res) => {
     }
 
     const user = User.create({ email, password, username, experienceLevel });
+    activityTracker.userRegistered(user.id);
     
     const token = generateToken(user.id);
     

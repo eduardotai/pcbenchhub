@@ -7,9 +7,9 @@ import { useTranslation } from 'react-i18next';
 import TopNav from './ui/TopNav';
 
 const footerLinks = [
-  { to: '/dashboard',   key: 'nav.dashboard' },
-  { to: '/leaderboard', key: 'nav.leaderboard' },
-  { to: '/compare',     key: 'nav.compare' },
+  { to: '/hardware',    key: 'nav.hardware' },
+  { to: '/community',   key: 'nav.community' },
+  { to: '/collections', key: 'nav.collections' },
   { to: '/submit',      key: 'nav.submit' }
 ];
 
@@ -72,4 +72,3 @@ export default function Layout() {
     </div>
   );
 }
-

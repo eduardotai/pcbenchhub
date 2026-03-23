@@ -1,9 +1,35 @@
 const express = require('express');
 const router = express.Router();
 const Vote = require('../models/Vote');
-const { auth, optionalAuth } = require('../middleware/auth');
+const { auth } = require('../middleware/auth');
+const { getDb } = require('../config/db');
+const { updateReputation, checkAndGrantBadges } = require('../utils/badgeEngine');
+const activityTracker = require('../utils/activityTracker');
 
-// POST /api/votes — body: { reportId, voteType (1 ou -1) }
+function getReportAuthorId(reportId) {
+  const db = getDb();
+  const stmt = db.prepare('SELECT user_id FROM benchmarks WHERE id = ?');
+  stmt.bind([String(reportId)]);
+
+  let authorId = null;
+  if (stmt.step()) {
+    authorId = stmt.getAsObject().user_id;
+  }
+  stmt.free();
+
+  return authorId;
+}
+
+function refreshAuthorCommunityState(authorId) {
+  if (!authorId) return;
+
+  updateReputation(authorId);
+  const newBadges = checkAndGrantBadges(authorId);
+  for (const badge of newBadges) {
+    activityTracker.badgeEarned(authorId, badge.id, badge.display_name || badge.name);
+  }
+}
+
 router.post('/', auth, (req, res) => {
   try {
     const { reportId, voteType } = req.body;
@@ -11,67 +37,85 @@ router.post('/', auth, (req, res) => {
     if (!reportId) {
       return res.status(400).json({ error: 'reportId is required' });
     }
+
     if (voteType !== 1 && voteType !== -1) {
       return res.status(400).json({ error: 'voteType must be 1 or -1' });
     }
 
-    const result = Vote.castVote(req.user.id, reportId, voteType);
-    const counts = Vote.getByReport(reportId);
+    const normalizedReportId = String(reportId);
+    const authorId = getReportAuthorId(normalizedReportId);
 
-    res.json({ ...result, ...counts });
+    if (!authorId) {
+      return res.status(404).json({ error: 'Report not found' });
+    }
+
+    const result = Vote.castVote(req.user.id, normalizedReportId, voteType);
+    const counts = Vote.getByReport(normalizedReportId);
+
+    refreshAuthorCommunityState(authorId);
+
+    if (result.action !== 'removed') {
+      activityTracker.reportVoted(req.user.id, normalizedReportId, voteType);
+    }
+
+    return res.json({ ...result, ...counts });
   } catch (error) {
     console.error('Error casting vote:', error);
-    res.status(500).json({ error: 'Failed to cast vote' });
+    return res.status(500).json({ error: 'Failed to cast vote' });
   }
 });
 
-// DELETE /api/votes/:reportId — remove voto do usuário autenticado
 router.delete('/:reportId', auth, (req, res) => {
   try {
-    const reportId = parseInt(req.params.reportId, 10);
-    if (isNaN(reportId)) {
+    const normalizedReportId = String(req.params.reportId || '').trim();
+    if (!normalizedReportId) {
       return res.status(400).json({ error: 'Invalid reportId' });
     }
 
-    Vote.removeVote(req.user.id, reportId);
-    const counts = Vote.getByReport(reportId);
+    const authorId = getReportAuthorId(normalizedReportId);
+    if (!authorId) {
+      return res.status(404).json({ error: 'Report not found' });
+    }
 
-    res.json({ action: 'removed', report_id: reportId, ...counts });
+    Vote.removeVote(req.user.id, normalizedReportId);
+    const counts = Vote.getByReport(normalizedReportId);
+
+    refreshAuthorCommunityState(authorId);
+
+    return res.json({ action: 'removed', report_id: normalizedReportId, ...counts });
   } catch (error) {
     console.error('Error removing vote:', error);
-    res.status(500).json({ error: 'Failed to remove vote' });
+    return res.status(500).json({ error: 'Failed to remove vote' });
   }
 });
 
-// GET /api/votes/report/:reportId — contagem de votos (público)
 router.get('/report/:reportId', (req, res) => {
   try {
-    const reportId = parseInt(req.params.reportId, 10);
-    if (isNaN(reportId)) {
+    const normalizedReportId = String(req.params.reportId || '').trim();
+    if (!normalizedReportId) {
       return res.status(400).json({ error: 'Invalid reportId' });
     }
 
-    const counts = Vote.getByReport(reportId);
-    res.json(counts);
+    const counts = Vote.getByReport(normalizedReportId);
+    return res.json(counts);
   } catch (error) {
     console.error('Error fetching vote counts:', error);
-    res.status(500).json({ error: 'Failed to fetch votes' });
+    return res.status(500).json({ error: 'Failed to fetch votes' });
   }
 });
 
-// GET /api/votes/my/:reportId — voto do usuário atual (autenticado)
 router.get('/my/:reportId', auth, (req, res) => {
   try {
-    const reportId = parseInt(req.params.reportId, 10);
-    if (isNaN(reportId)) {
+    const normalizedReportId = String(req.params.reportId || '').trim();
+    if (!normalizedReportId) {
       return res.status(400).json({ error: 'Invalid reportId' });
     }
 
-    const vote = Vote.getUserVote(req.user.id, reportId);
-    res.json({ vote: vote ? vote.vote_type : null });
+    const vote = Vote.getUserVote(req.user.id, normalizedReportId);
+    return res.json({ vote: vote ? Number(vote.vote_type) : null });
   } catch (error) {
     console.error('Error fetching user vote:', error);
-    res.status(500).json({ error: 'Failed to fetch user vote' });
+    return res.status(500).json({ error: 'Failed to fetch user vote' });
   }
 });
 

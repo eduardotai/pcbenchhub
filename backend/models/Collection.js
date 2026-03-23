@@ -191,12 +191,15 @@ class Collection {
       'INSERT OR IGNORE INTO collection_votes (user_id, collection_id, created_at) VALUES (?, ?, ?)',
       [userId, collectionId, new Date().toISOString()]
     );
-    db.run(
-      'UPDATE collections SET upvote_count = upvote_count + 1 WHERE id = ?',
-      [collectionId]
-    );
+    const inserted = db.getRowsModified() > 0;
+    if (inserted) {
+      db.run(
+        'UPDATE collections SET upvote_count = upvote_count + 1 WHERE id = ?',
+        [collectionId]
+      );
+    }
     saveDatabase();
-    return { voted: true };
+    return { voted: inserted || !!this.getUserVote(userId, collectionId) };
   }
 
   static unvote(userId, collectionId) {
@@ -205,10 +208,13 @@ class Collection {
       'DELETE FROM collection_votes WHERE user_id = ? AND collection_id = ?',
       [userId, collectionId]
     );
-    db.run(
-      'UPDATE collections SET upvote_count = MAX(0, upvote_count - 1) WHERE id = ?',
-      [collectionId]
-    );
+    const deleted = db.getRowsModified() > 0;
+    if (deleted) {
+      db.run(
+        'UPDATE collections SET upvote_count = MAX(0, upvote_count - 1) WHERE id = ?',
+        [collectionId]
+      );
+    }
     saveDatabase();
     return { voted: false };
   }

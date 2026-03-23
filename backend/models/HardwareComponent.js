@@ -111,7 +111,7 @@ class HardwareComponent {
    * Retrieve a list of hardware components with optional filters.
    * Supports: category, search (against name), limit, offset.
    */
-  static getAll({ category, search, limit = 20, offset = 0 } = {}) {
+  static getAll({ category, search, sort = 'rating', limit = 20, offset = 0 } = {}) {
     const db = getDb();
     let query = 'SELECT * FROM hardware_components WHERE 1=1';
     const params = [];
@@ -125,7 +125,26 @@ class HardwareComponent {
       params.push(`%${search}%`, `%${search}%`);
     }
 
-    query += ' ORDER BY report_count DESC, name ASC LIMIT ? OFFSET ?';
+    if (sort === 'reports') {
+      query += ' ORDER BY report_count DESC, name ASC';
+    } else if (sort === 'score') {
+      query += ' ORDER BY avg_score DESC, report_count DESC, name ASC';
+    } else {
+      query += ` ORDER BY
+        CASE community_rating
+          WHEN 'Legendary' THEN 1
+          WHEN 'Great' THEN 2
+          WHEN 'Solid' THEN 3
+          WHEN 'Mediocre' THEN 4
+          WHEN 'Poor' THEN 5
+          ELSE 6
+        END ASC,
+        rating_confidence DESC,
+        report_count DESC,
+        name ASC`;
+    }
+
+    query += ' LIMIT ? OFFSET ?';
     params.push(limit, offset);
 
     const results = [];
@@ -136,6 +155,29 @@ class HardwareComponent {
     }
     stmt.free();
     return results;
+  }
+
+  static count({ category, search } = {}) {
+    const db = getDb();
+    let query = 'SELECT COUNT(*) as total FROM hardware_components WHERE 1=1';
+    const params = [];
+
+    if (category) {
+      query += ' AND category = ?';
+      params.push(category);
+    }
+    if (search) {
+      query += ' AND (name LIKE ? OR normalized_name LIKE ?)';
+      params.push(`%${search}%`, `%${search}%`);
+    }
+
+    const stmt = db.prepare(query);
+    stmt.bind(params);
+    stmt.step();
+    const result = stmt.getAsObject();
+    stmt.free();
+
+    return result.total || 0;
   }
 
   /**

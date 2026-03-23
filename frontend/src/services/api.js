@@ -42,8 +42,6 @@ export const benchmarks = {
   getAll: (params) => api.get('/benchmarks', { params }),
   getById: (id) => api.get(`/benchmarks/${id}`),
   getByUser: (userId, params) => api.get(`/benchmarks/user/${userId}`, { params }),
-  getCompare: (ids) => api.get('/benchmarks/compare', { params: { ids: ids.join(',') } }),
-  getLeaderboard: (params) => api.get('/benchmarks/leaderboard', { params }),
   getCategories: () => api.get('/benchmarks/stats/categories'),
   getTools: () => api.get('/benchmarks/stats/tools'),
   submit: (data) => api.post('/benchmarks', data),
@@ -79,6 +77,13 @@ export const hardware = {
   resolve: (text) => api.post('/hardware/resolve', { text }),
   getRating: (id) => api.get(`/ratings/hardware/${id}`),
   getRatingHistory: (id) => api.get(`/ratings/hardware/${id}/history`),
+  recalculateRating: (id) => api.post(`/ratings/recalculate/${id}`),
+};
+
+export const feed = {
+  getAll: (params) => api.get('/feed', { params }),
+  getMilestones: (params) => api.get('/feed/milestones', { params }),
+  getTrending: (params) => api.get('/feed/trending', { params }),
 };
 
 export const profiles = {

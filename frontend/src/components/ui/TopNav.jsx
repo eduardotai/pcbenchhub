@@ -16,9 +16,9 @@ import { cn } from '../../utils/cn';
 
 const navConfig = [
   { to: '/',          key: 'nav.home' },
-  { to: '/dashboard', key: 'nav.dashboard' },
   { to: '/hardware',  key: 'nav.hardware' },
-  { to: '/submit',    key: 'nav.submit' },
+  { to: '/community', key: 'nav.community' },
+  { to: '/collections', key: 'nav.collections' },
 ];
 
 function NavItem({ to, children, onClick, exact = false }) {

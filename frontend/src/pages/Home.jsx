@@ -166,14 +166,14 @@ export default function Home() {
 
             {/* CTAs */}
             <div className="mt-7 flex flex-wrap gap-3">
-              <Link to="/dashboard" className="btn btn-primary" style={{ fontSize: '0.9rem', padding: '0.65rem 1.4rem' }}>
+              <Link to="/hardware" className="btn btn-primary" style={{ fontSize: '0.9rem', padding: '0.65rem 1.4rem' }}>
                 {t('hero.ctaSecondary')}
               </Link>
               <Link to="/submit" className="btn btn-secondary" style={{ fontSize: '0.9rem', padding: '0.65rem 1.4rem' }}>
                 {t('hero.cta')}
               </Link>
-              <Link to="/compare" className="btn btn-ghost" style={{ fontSize: '0.9rem', padding: '0.65rem 1.2rem' }}>
-                {t('nav.compare')}
+              <Link to="/community" className="btn btn-ghost" style={{ fontSize: '0.9rem', padding: '0.65rem 1.2rem' }}>
+                {t('nav.community', 'Community')}
               </Link>
             </div>
           </div>
@@ -222,7 +222,7 @@ export default function Home() {
           {categoryShortcuts.map((cat) => (
             <Link
               key={cat.key}
-              to={`/dashboard?category=${cat.key}`}
+              to={`/hardware?category=${cat.title}`}
               className="surface-hover"
               style={{
                 display: 'block',
@@ -270,7 +270,7 @@ export default function Home() {
             title={t('home.sections.recentTitle')}
             subtitle={t('home.sections.recentSubtitle')}
             action={
-              <Link to="/dashboard" className="btn btn-ghost" style={{ fontSize: '0.82rem', padding: '0.42rem 0.9rem' }}>
+              <Link to="/community" className="btn btn-ghost" style={{ fontSize: '0.82rem', padding: '0.42rem 0.9rem' }}>
                 {t('home.viewAll')} →
               </Link>
             }

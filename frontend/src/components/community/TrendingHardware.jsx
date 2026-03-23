@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../../services/api';
+import { feed } from '../../services/api';
 import RatingBadge from './RatingBadge';
 import Skeleton from '../ui/Skeleton';
 import EmptyState from '../ui/EmptyState';
@@ -11,7 +11,7 @@ export default function TrendingHardware({ limit = 5 }) {
 
   useEffect(() => {
     let cancelled = false;
-    api.get('/feed/trending', { params: { limit } })
+    feed.getTrending({ limit })
       .then((res) => {
         if (!cancelled) setComponents(res.data.components || []);
       })
