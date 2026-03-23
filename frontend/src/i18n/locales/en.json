@@ -5,7 +5,16 @@
   },
   "footer": {
     "desc": "Track verified benchmarks, compare builds, and discover realistic performance ranges.",
-    "rights": "All rights reserved."
+    "rights": "All rights reserved.",
+    "eyebrow": "Editorial shell",
+    "foundationTitle": "Game-first foundation ready to receive Games without breaking the current routes.",
+    "scopeTitle": "Live in this slice",
+    "scopeBody": "Global tokens, typography, shared shell and base surfaces.",
+    "statusLabel": "Current state",
+    "statusValue": "Slice 1 active",
+    "nextSliceLabel": "Next slice",
+    "nextSliceValue": "Games hub + canonical search",
+    "currentSectionLabel": "Current route"
   },
   "nav": {
     "home": "Home",
@@ -20,7 +29,12 @@
     "admin": "Admin",
     "login": "Login",
     "register": "Register",
-    "logout": "Logout"
+    "logout": "Logout",
+    "searchPlaceholder": "Search games, hardware and users",
+    "searchAction": "Search",
+    "searchFallback": "Currently routes to Hardware until global search ships",
+    "menu": "Menu",
+    "close": "Close"
   },
   "hero": {
     "title": "Find Your Real PC Performance Window",

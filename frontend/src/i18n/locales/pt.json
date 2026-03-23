@@ -5,7 +5,16 @@
   },
   "footer": {
     "desc": "Acompanhe benchmarks verificados, compare setups e descubra faixas reais de performance.",
-    "rights": "Todos os direitos reservados."
+    "rights": "Todos os direitos reservados.",
+    "eyebrow": "Shell editorial",
+    "foundationTitle": "Fundacao game-first pronta para receber Games sem quebrar as rotas atuais.",
+    "scopeTitle": "No ar nesta fatia",
+    "scopeBody": "Tokens globais, tipografia, shell compartilhado e superficies base.",
+    "statusLabel": "Estado atual",
+    "statusValue": "Fatia 1 ativa",
+    "nextSliceLabel": "Proxima fatia",
+    "nextSliceValue": "Hub de Games + busca canonica",
+    "currentSectionLabel": "Rota atual"
   },
   "nav": {
     "home": "Inicio",
@@ -20,7 +29,12 @@
     "admin": "Admin",
     "login": "Entrar",
     "register": "Cadastrar",
-    "logout": "Sair"
+    "logout": "Sair",
+    "searchPlaceholder": "Buscar games, hardware e usuarios",
+    "searchAction": "Buscar",
+    "searchFallback": "Hoje redireciona para Hardware ate a busca global entrar",
+    "menu": "Menu",
+    "close": "Fechar"
   },
   "hero": {
     "title": "Descubra a faixa real de performance do seu PC",
